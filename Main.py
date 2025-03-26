@@ -69,3 +69,24 @@ model.fit(X_train, y_train)
 y_pred = model.predict(X_test)
 mae = mean_absolute_error(y_test, y_pred)
 print(f"Mean Absolute Error: {mae:.2f}")
+
+# Function for user input prediction
+def predict_rating(title, overview, genres, budget):
+    title_vec = tfidf_title.transform([title])
+    overview_vec = tfidf_overview.transform([overview])
+    genres_vec = mlb.transform([genres])
+    budget_scaled = scaler.transform([[budget]])
+    
+    X_input = hstack([title_vec, overview_vec, genres_vec, budget_scaled])
+    predicted_rating = model.predict(X_input)[0]
+    
+    return predicted_rating
+
+# Example user input
+title_input = "Example Movie"
+overview_input = "A thrilling story about AI and human interactions."
+genres_input = ["Action", "Sci-Fi"]
+budget_input = 50000000
+
+predicted_rating = predict_rating(title_input, overview_input, genres_input, budget_input)
+print(f"Predicted Rating: {predicted_rating:.2f}")
