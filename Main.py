@@ -4,12 +4,11 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.preprocessing import MultiLabelBinarizer, MinMaxScaler
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.pipeline import make_pipeline
+from sklearn.compose import ColumnTransformer
 from sklearn.metrics import mean_absolute_error
 from scipy.sparse import hstack
-import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout
 
 # Load dataset
 file_path = "movies_metadata.csv"
@@ -51,7 +50,7 @@ def preprocess_data(df):
     X_budget = scaler.fit_transform(df[["budget"]])
     
     # Combine all features
-    X = hstack([X_title, X_overview, X_genres, X_budget]).toarray()
+    X = hstack([X_title, X_overview, X_genres, X_budget])
     y = df["vote_average"].values
     
     return X, y, tfidf_title, tfidf_overview, mlb, scaler
@@ -62,32 +61,11 @@ X, y, tfidf_title, tfidf_overview, mlb, scaler = preprocess_data(df)
 # Train-test split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Build Neural Network Model
-model = Sequential([
-    Dense(512, activation='relu', input_shape=(X_train.shape[1],)),
-    Dropout(0.3),
-    Dense(256, activation='relu'),
-    Dropout(0.3),
-    Dense(128, activation='relu'),
-    Dense(1, activation='linear')
-])
-
-model.compile(optimizer='adam', loss='mean_absolute_error', metrics=['mae'])
-
-# Train model with epoch tracking
-epochs = 50
-history = model.fit(X_train, y_train, epochs=epochs, batch_size=32, validation_data=(X_test, y_test))
+# Train model
+model = RandomForestRegressor(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
 
 # Evaluate model
 y_pred = model.predict(X_test)
 mae = mean_absolute_error(y_test, y_pred)
 print(f"Mean Absolute Error: {mae:.2f}")
-
-# Display training progress
-import matplotlib.pyplot as plt
-plt.plot(history.history['mae'], label='Train MAE')
-plt.plot(history.history['val_mae'], label='Validation MAE')
-plt.xlabel('Epochs')
-plt.ylabel('Mean Absolute Error')
-plt.legend()
-plt.show()
