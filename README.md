@@ -1,81 +1,89 @@
-# Movie_Success_Prediction
- predict weather movie will be success or not based on overview nad other metadata
 # Movie Rating Prediction
 
 ## 📌 Project Overview
-This project predicts movie ratings based on various features such as title, overview, genres, and budget. It uses **Natural Language Processing (NLP)** techniques, **feature engineering**, and a **Random Forest Regressor** to estimate the movie rating (vote_average).
-
-## 📂 Project Structure
-```
-Movie-Rating-Prediction/
-│── data/
-│   └── movies_metadata.csv      # Dataset containing movie information
-│── src/
-│   ├── preprocessing.py         # Data preprocessing and feature extraction
-│   ├── train.py                 # Model training and evaluation
-│   ├── predict.py               # User input-based movie rating prediction
-│── transformers.pkl             # Saved transformers (TF-IDF, Scaler, etc.)
-│── model.pkl                    # Saved trained model
-│── README.md                    # Project documentation
-```
-
-## 📊 Exploratory Data Analysis (EDA)
-- **Missing Data Handling**: Filled missing overviews, converted budget to numeric.
-- **Outlier Removal**: Used the **IQR method** to filter out extreme values in `budget` and `vote_average`.
-- **Feature Engineering**:
-  - **TF-IDF Vectorization**: Applied on `title` and `overview`.
-  - **One-hot Encoding**: Used for `genres`.
-  - **Min-Max Scaling**: Applied to `budget`.
-
-## 🛠️ Installation & Setup
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/your-username/Movie-Rating-Prediction.git
-   cd Movie-Rating-Prediction
-   ```
-2. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. **Run data preprocessing**
-   ```bash
-   python src/preprocessing.py
-   ```
-4. **Train the model**
-   ```bash
-   python src/train.py
-   ```
-5. **Make predictions using user input**
-   ```bash
-   python src/predict.py
-   ```
-
-## 📜 Usage
-### **Training the Model**
-- `train.py` loads preprocessed data, trains a **RandomForestRegressor**, and saves the trained model.
-
-### **Predicting Movie Ratings**
-- `predict.py` takes user input (title, overview, genres, budget) and predicts the movie rating using the trained model.
-
-## 📈 Model Performance
-- **Mean Absolute Error (MAE):** ~1.29
-
-## 🔥 Technologies Used
-- **Python**
-- **scikit-learn**
-- **pandas, NumPy**
-- **TF-IDF for NLP processing**
-- **Random Forest Regressor**
-
-## 🚀 Future Improvements
-- Enhance the model using **Deep Learning**.
-- Integrate **Sentiment Analysis** on reviews.
-- Deploy as a **web-based app**.
-
-## 🙌 Credits
-Developed by **[Your Name]**
+This project builds a **Machine Learning model** to predict movie ratings based on **title, overview, genre, and budget**. The model is trained on the **movies_metadata.csv** dataset and utilizes **Natural Language Processing (NLP)** for textual features. The goal is to efficiently predict ratings for new movies using a trained model without requiring retraining every time.
 
 ---
 
-🎬 **Happy Predicting!** 🎥
+## 📁 Project Structure
+
+```
+Movie_Rating_Prediction/
+│── data/
+│   ├── movies_metadata.csv          # Original dataset
+│   ├── preprocessed_data.pkl        # Preprocessed feature set (optional caching)
+│── saved_models/
+│   ├── tfidf_title.pkl              # TF-IDF vectorizer for title
+│   ├── tfidf_overview.pkl           # TF-IDF vectorizer for overview
+│   ├── mlb.pkl                      # MultiLabelBinarizer for genres
+│   ├── scaler.pkl                   # MinMaxScaler for budget
+│   ├── movie_rating_model.pkl       # Trained ML model
+│── src/
+│   ├── preprocessing.py             # Data cleaning, feature engineering
+│   ├── train_model.py               # Model training & evaluation
+│   ├── predict.py                   # Prediction using saved model
+│── notebooks/
+│   ├── exploratory_analysis.ipynb   # Data visualization & analysis
+│── README.md                        # Project documentation
+│── requirements.txt                  # Dependencies
+```
+
+---
+
+## 🚀 Features
+✅ **Preprocessing**: Handles missing values, removes outliers, and vectorizes text.  
+✅ **Model Training**: Uses **RandomForestRegressor** for predicting movie ratings.  
+✅ **Efficient Predictions**: Saves trained models to avoid retraining.  
+✅ **User Input Support**: Predict ratings for new movies based on user-provided details.  
+✅ **Scalability**: Can be extended with different ML models (XGBoost, Neural Networks).  
+
+---
+
+## ⚙️ Installation
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/PranavJorvekar/Movie_Success_Prediction
+   cd Movie_Rating_Prediction
+   ```
+2. **Install Dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+---
+
+## 📊 Data Preprocessing
+- **Handles Missing Values**: Uses appropriate methods for different columns.
+- **Outlier Removal**: Detects and removes extreme values in numerical data.
+- **Feature Engineering**:
+  - Converts **genres** into one-hot encoding.
+  - Vectorizes **title & overview** using **TF-IDF**.
+  - Normalizes **budget** using **MinMaxScaler**.
+
+---
+
+## 🎯 Model Training
+- Uses **RandomForestRegressor** for regression.
+- Evaluated using **Mean Absolute Error (MAE)**.
+- Saves trained model and preprocessed objects for **efficient reuse**.
+
+---
+
+## 🔮 Prediction Workflow
+1. Loads the trained model and preprocessing objects.
+2. Accepts **user input** (Title, Overview, Genres, Budget).
+3. Applies the same preprocessing as training.
+4. Predicts the movie rating using the trained model.
+
+---
+
+## 🛠️ Future Improvements
+- Implement **hyperparameter tuning** for better accuracy.
+- Experiment with **XGBoost & Neural Networks**.
+- Add a **web interface** for easy user interaction.
+
+---
+
+## 📩 Contact
+For any questions or improvements, feel free to reach out or contribute to the project! 🚀
 

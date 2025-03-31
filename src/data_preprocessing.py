@@ -1,73 +1,66 @@
 import pandas as pd
 import ast
 import numpy as np
-import os
 import pickle
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.preprocessing import MultiLabelBinarizer, MinMaxScaler
-from scipy.sparse import hstack
-
-# Create directories if not exist
-os.makedirs("../saved_models", exist_ok=True)
-os.makedirs("../data", exist_ok=True)
+from scipy.sparse import hstack, csr_matrix
 
 # Load dataset
-file_path = "data\movies_metadata.csv"
-df = pd.read_csv(file_path, low_memory=False)
+def load_data(file_path):
+    df = pd.read_csv(file_path, low_memory=False)
 
-# Handle missing values
-df["budget"] = pd.to_numeric(df["budget"], errors="coerce").fillna(0)  # Replace NaN with 0
-df["overview"] = df["overview"].fillna("No overview available")  # Replace NaN with default text
-df["title"] = df["title"].fillna("Unknown Title")  # Replace NaN with default text
-df["vote_average"] = df["vote_average"].fillna(df["vote_average"].median())  # Replace with median
+    # Drop rows with missing vote_average and vote_count < 25
+    df.dropna(subset=["vote_average", "vote_count"], inplace=True)
+    df = df[df["vote_count"] >= 25]
 
-# Extract genres
-def extract_genres(genre_str):
-    try:
-        genres = ast.literal_eval(genre_str)
-        return [genre["name"] for genre in genres] if isinstance(genres, list) else []
-    except (ValueError, SyntaxError):
-        return []
+    # Extract genres
+    def extract_genres(genre_str):
+        try:
+            genres = ast.literal_eval(genre_str)
+            return [genre["name"] for genre in genres] if isinstance(genres, list) else []
+        except (ValueError, SyntaxError):
+            return []
+    
+    df["genres"] = df["genres"].apply(extract_genres)
 
-df["genres"] = df["genres"].apply(extract_genres)
+    # Merge tagline and overview
+    df["overview"] = df["overview"].fillna("") + " " + df["tagline"].fillna("")
 
-# Remove outliers using IQR method
-def remove_outliers(df, column):
-    Q1 = df[column].quantile(0.25)
-    Q3 = df[column].quantile(0.75)
-    IQR = Q3 - Q1
-    lower_bound = Q1 - 1.5 * IQR
-    upper_bound = Q3 + 1.5 * IQR
-    return df[(df[column] >= lower_bound) & (df[column] <= upper_bound)]
+    return df
 
-df = remove_outliers(df, "budget")
-df = remove_outliers(df, "vote_average")
+# Preprocessing Function
+def preprocess_data(df):
+    # Vectorize text features
+    tfidf_title = TfidfVectorizer(max_features=500)
+    tfidf_overview = TfidfVectorizer(max_features=5000)  # Increased max_features for overview
 
-# Vectorization & Encoding
-tfidf_title = TfidfVectorizer(max_features=500)
-tfidf_overview = TfidfVectorizer(max_features=500)
-mlb = MultiLabelBinarizer()
-scaler = MinMaxScaler()
+    X_title = tfidf_title.fit_transform(df["title"])
+    X_overview = tfidf_overview.fit_transform(df["overview"])
 
-X_title = tfidf_title.fit_transform(df["title"])
-X_overview = tfidf_overview.fit_transform(df["overview"])
-X_genres = mlb.fit_transform(df["genres"])
-X_budget = scaler.fit_transform(df[["budget"]])
+    # One-hot encode genres
+    mlb = MultiLabelBinarizer()
+    X_genres = mlb.fit_transform(df["genres"])
 
-# Combine features
-X = hstack([X_title, X_overview, X_genres, X_budget])
-y = df["vote_average"].values
+    # Combine all features (keeping it sparse)
+    X = hstack([X_title, X_overview, X_genres])
 
-# Save preprocessed data & models
-with open("../saved_models/tfidf_title.pkl", "wb") as f:
-    pickle.dump(tfidf_title, f)
-with open("../saved_models/tfidf_overview.pkl", "wb") as f:
-    pickle.dump(tfidf_overview, f)
-with open("../saved_models/mlb.pkl", "wb") as f:
-    pickle.dump(mlb, f)
-with open("../saved_models/scaler.pkl", "wb") as f:
-    pickle.dump(scaler, f)
-with open("../data/preprocessed_data.pkl", "wb") as f:
-    pickle.dump((X, y), f)
+    y = df["vote_average"].values  # Target
 
-print("✅ Data Preprocessing Completed & Saved Successfully!")
+    # Save preprocessing models
+    with open("../saved_models/tfidf_title.pkl", "wb") as f:
+        pickle.dump(tfidf_title, f)
+
+    with open("../saved_models/tfidf_overview.pkl", "wb") as f:
+        pickle.dump(tfidf_overview, f)
+
+    with open("../saved_models/mlb.pkl", "wb") as f:
+        pickle.dump(mlb, f)
+
+    return X, y
+
+if __name__ == "__main__":
+    file_path = "data/movies_metadata.csv"
+    df = load_data(file_path)
+    X, y = preprocess_data(df)
+    print("✅ Data Preprocessing Complete! Preprocessed models saved in 'saved_models/'")

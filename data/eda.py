@@ -86,4 +86,4 @@ def eda(file_path):
     plot_rating_distribution(df)
 
 if __name__ == "__main__":
-    eda("movies_metadata.csv")
+    eda("data\movies_metadata.csv")

@@ -1,11 +1,3 @@
-import joblib
-import os
-
-MODEL_PATH = "saved_models/movie_rating_model.pkl"
-
-try:
-    model = joblib.load(MODEL_PATH)
-    print("✅ Model loaded successfully!")
-    print(model)
-except Exception as e:
-    print(f"❌ Error loading model: {e}")
+    title_input = "Empty Promises"
+    overview_input = "A film that promises much but delivers little. With a poorly structured plot and flat performances, it leaves viewers disappointed."
+    genres_input = ["Drama"]
