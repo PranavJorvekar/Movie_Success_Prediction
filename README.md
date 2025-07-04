@@ -7,7 +7,7 @@ This project builds a **Machine Learning model** to predict movie ratings based 
 
 ## 📁 Project Structure
 
-```
+\`\`\`
 Movie_Rating_Prediction/
 │── data/
 │   ├── movies_metadata.csv          # Original dataset
@@ -26,7 +26,7 @@ Movie_Rating_Prediction/
 │   ├── exploratory_analysis.ipynb   # Data visualization & analysis
 │── README.md                        # Project documentation
 │── requirements.txt                  # Dependencies
-```
+\`\`\`
 
 ---
 
@@ -41,14 +41,14 @@ Movie_Rating_Prediction/
 
 ## ⚙️ Installation
 1. **Clone the Repository**:
-   ```bash
+   \`\`\`bash
    git clone https://github.com/PranavJorvekar/Movie_Success_Prediction
    cd Movie_Rating_Prediction
-   ```
+   \`\`\`
 2. **Install Dependencies**:
-   ```bash
+   \`\`\`bash
    pip install -r requirements.txt
-   ```
+   \`\`\`
 
 ---
 
@@ -86,4 +86,3 @@ Movie_Rating_Prediction/
 
 ## 📩 Contact
 For any questions or improvements, feel free to reach out or contribute to the project! 🚀
-
