@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { Star, CheckCircle, Film } from "lucide-react"
+import { Star, CheckCircle, Film, Sparkles, TrendingUp, Award } from "lucide-react"
 
 interface RatingResultProps {
   prediction: {
@@ -26,7 +26,7 @@ export function RatingResult({ prediction, movieData }: RatingResultProps) {
   // Handle error state
   if (prediction.error) {
     return (
-      <Card className="border-2 border-red-200 bg-red-50/50">
+      <Card className="border-2 border-red-200 bg-red-50/50 shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-red-900">
             <Star className="h-5 w-5" />
@@ -95,75 +95,91 @@ export function RatingResult({ prediction, movieData }: RatingResultProps) {
   }
 
   return (
-    <Card className="border-2 border-yellow-200 bg-yellow-50/50">
+    <Card className="border-2 border-yellow-200 bg-gradient-to-br from-yellow-50 to-orange-50 shadow-xl">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-yellow-900">
-          <Star className="h-5 w-5 fill-current" />
+        <CardTitle className="flex items-center gap-3 text-yellow-900 text-2xl">
+          <div className="relative">
+            <Star className="h-6 w-6 fill-current" />
+            <Sparkles className="h-3 w-3 text-yellow-500 absolute -top-1 -right-1 animate-pulse" />
+          </div>
           Rating Prediction Results
         </CardTitle>
-        <CardDescription>AI prediction for "{movieData.title}" using RandomForest ML model</CardDescription>
+        <CardDescription className="text-base">
+          AI-powered prediction for "<span className="font-semibold text-yellow-800">{movieData.title}</span>" using our advanced RandomForest ML model
+        </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-8">
         {/* Main Rating Display */}
-        <div className="text-center p-6 bg-white rounded-lg border-2 border-yellow-200">
-          <div className={`text-6xl font-bold mb-2 ${getRatingColor(ratingOutOf10)}`}>{ratingOutOf10.toFixed(1)}</div>
-          <div className="text-lg text-gray-600 mb-3">out of 10</div>
+        <div className="text-center p-8 bg-white rounded-2xl border-2 border-yellow-200 shadow-lg">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Award className="h-8 w-8 text-yellow-600" />
+            <span className="text-lg font-semibold text-gray-700">Predicted Rating</span>
+          </div>
+          <div className={`text-7xl font-bold mb-3 ${getRatingColor(ratingOutOf10)}`}>
+            {ratingOutOf10.toFixed(1)}
+          </div>
+          <div className="text-xl text-gray-600 mb-4">out of 10</div>
           {getStarRating(ratingOutOf10)}
-          <div className="mt-4">
-            <Badge className={getRatingBadgeColor(prediction.rating_category)}>{prediction.rating_category}</Badge>
+          <div className="mt-6">
+            <Badge className={`${getRatingBadgeColor(prediction.rating_category)} text-sm px-4 py-2`}>
+              {prediction.rating_category}
+            </Badge>
           </div>
         </div>
 
         {/* Rating Breakdown */}
-        <div className="space-y-4">
-          <h3 className="font-semibold text-gray-900">Rating Breakdown</h3>
+        <div className="space-y-6">
+          <h3 className="font-bold text-xl text-gray-900 flex items-center gap-2">
+            <TrendingUp className="h-5 w-5 text-blue-600" />
+            Rating Analysis
+          </h3>
 
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-700">Overall Score</span>
-              <span className="text-sm font-medium text-gray-900">{ratingOutOf10.toFixed(1)}/10</span>
+              <span className="text-base font-semibold text-gray-700">Overall Score</span>
+              <span className="text-base font-bold text-gray-900">{ratingOutOf10.toFixed(1)}/10</span>
             </div>
-            <Progress value={ratingPercentage} className="h-3" />
+            <Progress value={ratingPercentage} className="h-4" />
           </div>
 
           {prediction.confidence_score && (
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-700">Model Confidence</span>
-                <span className="text-sm font-medium text-gray-900">
+                <span className="text-base font-semibold text-gray-700">Model Confidence</span>
+                <span className="text-base font-bold text-gray-900">
                   {(prediction.confidence_score * 100).toFixed(1)}%
                 </span>
               </div>
-              <Progress value={prediction.confidence_score * 100} className="h-2" />
+              <Progress value={prediction.confidence_score * 100} className="h-3" />
             </div>
           )}
         </div>
 
         {/* Movie Details Summary */}
-        <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-          <h4 className="font-semibold text-blue-900 mb-3 flex items-center gap-2">
-            <Film className="h-4 w-4" />
+        <div className="p-6 bg-blue-50 rounded-xl border border-blue-200">
+          <h4 className="font-bold text-lg text-blue-900 mb-4 flex items-center gap-2">
+            <Film className="h-5 w-5" />
             Movie Summary
           </h4>
-          <div className="space-y-2 text-sm">
+          <div className="space-y-3 text-base">
             <div>
-              <strong>Title:</strong> {movieData.title}
+              <strong className="text-blue-800">Title:</strong> <span className="text-gray-700">{movieData.title}</span>
             </div>
             <div>
-              <strong>Genres:</strong> {movieData.genres.join(", ")}
+              <strong className="text-blue-800">Genres:</strong> <span className="text-gray-700">{movieData.genres.join(", ")}</span>
             </div>
             {movieData.budget && (
               <div>
-                <strong>Budget:</strong> ${Number.parseInt(movieData.budget).toLocaleString()}
+                <strong className="text-blue-800">Budget:</strong> <span className="text-gray-700">${Number.parseInt(movieData.budget).toLocaleString()}</span>
               </div>
             )}
           </div>
         </div>
 
         {/* Model Information */}
-        <div className="p-4 bg-gray-50 rounded-lg border">
-          <h4 className="font-semibold text-gray-900 mb-2">Model Information</h4>
-          <div className="text-sm text-gray-600 space-y-1">
+        <div className="p-6 bg-gray-50 rounded-xl border">
+          <h4 className="font-bold text-lg text-gray-900 mb-3">Model Information</h4>
+          <div className="text-base text-gray-600 space-y-2">
             <div>Algorithm: {prediction.model_info.model_type}</div>
             <div>Mean Absolute Error: {prediction.model_info.mae.toFixed(3)}</div>
             <div>Features: Title (TF-IDF), Overview (TF-IDF), Genres, Budget, Runtime</div>
@@ -171,12 +187,12 @@ export function RatingResult({ prediction, movieData }: RatingResultProps) {
         </div>
 
         {/* Interpretation */}
-        <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-          <h4 className="font-semibold text-green-900 mb-2 flex items-center gap-2">
-            <CheckCircle className="h-4 w-4" />
+        <div className="p-6 bg-green-50 rounded-xl border border-green-200">
+          <h4 className="font-bold text-lg text-green-900 mb-3 flex items-center gap-2">
+            <CheckCircle className="h-5 w-5" />
             Interpretation
           </h4>
-          <ul className="text-sm text-green-800 space-y-1">
+          <ul className="text-base text-green-800 space-y-2">
             {ratingOutOf10 >= 7.5 && <li>• This movie is predicted to be highly rated by audiences</li>}
             {ratingOutOf10 >= 6 && ratingOutOf10 < 7.5 && <li>• This movie should receive above-average ratings</li>}
             {ratingOutOf10 >= 4 && ratingOutOf10 < 6 && <li>• This movie may receive mixed to average ratings</li>}
