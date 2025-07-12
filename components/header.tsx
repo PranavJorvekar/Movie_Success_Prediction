@@ -1,5 +1,7 @@
 "use client"
 
+"use client"
+
 import { Star, Github, Brain, Sparkles, Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
