@@ -1,7 +1,21 @@
-import { Star, Github, Brain, Sparkles } from "lucide-react"
+"use client"
+
+import { Star, Github, Brain, Sparkles, Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useState } from "react"
+import Link from "next/link"
 
 export function Header() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    }
+    setIsMenuOpen(false)
+  }
+
   return (
     <header className="border-b bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm">
       <div className="container mx-auto px-4 py-4">
@@ -19,29 +33,124 @@ export function Header() {
             </span>
           </div>
 
+          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
-            <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors font-medium">
-              Predictions
-            </a>
-            <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors font-medium">
-              Model Info
-            </a>
-            <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors font-medium">
-              Dataset
-            </a>
+            <button 
+              onClick={() => scrollToSection('predictor')}
+              className="text-gray-600 hover:text-blue-600 transition-colors font-medium"
+            >
+              Predictor
+            </button>
+            <button 
+              onClick={() => scrollToSection('model-stats')}
+              className="text-gray-600 hover:text-blue-600 transition-colors font-medium"
+            >
+              Model Stats
+            </button>
+            <button 
+              onClick={() => scrollToSection('features')}
+              className="text-gray-600 hover:text-blue-600 transition-colors font-medium"
+            >
+              Features
+            </button>
+            <button 
+              onClick={() => scrollToSection('about')}
+              className="text-gray-600 hover:text-blue-600 transition-colors font-medium"
+            >
+              About
+            </button>
           </nav>
 
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" className="hover:bg-blue-50 hover:border-blue-300">
+          {/* Desktop Action Buttons */}
+          <div className="hidden md:flex items-center gap-3">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="hover:bg-blue-50 hover:border-blue-300"
+              onClick={() => scrollToSection('model-stats')}
+            >
               <Brain className="h-4 w-4 mr-2" />
               ML Model
             </Button>
-            <Button variant="outline" size="sm" className="hover:bg-gray-50">
-              <Github className="h-4 w-4 mr-2" />
-              GitHub
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="hover:bg-gray-50"
+              asChild
+            >
+              <Link href="https://github.com/PranavJorvekar/Movie_Success_Prediction" target="_blank" rel="noopener noreferrer">
+                <Github className="h-4 w-4 mr-2" />
+                GitHub
+              </Link>
             </Button>
           </div>
+
+          {/* Mobile Menu Button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="md:hidden"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
         </div>
+
+        {/* Mobile Navigation */}
+        {isMenuOpen && (
+          <div className="md:hidden mt-4 pb-4 border-t border-gray-200">
+            <nav className="flex flex-col gap-4 pt-4">
+              <button 
+                onClick={() => scrollToSection('predictor')}
+                className="text-left text-gray-600 hover:text-blue-600 transition-colors font-medium"
+              >
+                Predictor
+              </button>
+              <button 
+                onClick={() => scrollToSection('model-stats')}
+                className="text-left text-gray-600 hover:text-blue-600 transition-colors font-medium"
+              >
+                Model Stats
+              </button>
+              <button 
+                onClick={() => scrollToSection('features')}
+                className="text-left text-gray-600 hover:text-blue-600 transition-colors font-medium"
+              >
+                Features
+              </button>
+              <button 
+                onClick={() => scrollToSection('about')}
+                className="text-left text-gray-600 hover:text-blue-600 transition-colors font-medium"
+              >
+                About
+              </button>
+              <div className="flex flex-col gap-2 pt-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="justify-start hover:bg-blue-50 hover:border-blue-300"
+                  onClick={() => {
+                    scrollToSection('model-stats')
+                  }}
+                >
+                  <Brain className="h-4 w-4 mr-2" />
+                  ML Model
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="justify-start hover:bg-gray-50"
+                  asChild
+                >
+                  <Link href="https://github.com/PranavJorvekar/Movie_Success_Prediction" target="_blank" rel="noopener noreferrer">
+                    <Github className="h-4 w-4 mr-2" />
+                    GitHub
+                  </Link>
+                </Button>
+              </div>
+            </nav>
+          </div>
+        )}
       </div>
     </header>
   )
